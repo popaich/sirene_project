@@ -1,0 +1,19 @@
+{
+    "etatService": "UP",
+    "versionService": "3.4.3",
+    "journalDesModifications": "https://api.insee.fr/registry/resource/_system/governance/apimgt/applicationdata/provider/insee/Sirene/V3/documentation/files/changelog.txt",
+    "datesDernieresMisesAJourDesDonnees": [
+        {
+            "collection": "Unités Légales",
+            "dateDerniereMiseADisposition": "2018-11-14T16:04:12",
+            "dateDernierTraitementMaximum": "2018-11-14",
+            "dateDernierTraitementDeMasse": "2018-09-30"
+        },
+        {
+            "collection": "Établissements",
+            "dateDerniereMiseADisposition": "2018-11-13T00:37:23",
+            "dateDernierTraitementMaximum": "2018-11-12",
+            "dateDernierTraitementDeMasse": "2018-09-30"
+        }
+    ]
+}
