@@ -1,0 +1,1 @@
+db.etablissement.createIndex( { "codeCommuneEtablissement": 1, "etatAdministratifEtablissement": 1 } )
