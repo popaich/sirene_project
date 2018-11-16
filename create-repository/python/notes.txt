@@ -1,0 +1,19 @@
+* update pip
+--------------------------------------------
+python -m pip install --upgrade pip
+
+
+* installation virtualenv
+---------------------------------------------
+pip install virtualenv
+
+-> Créer un environnement
+
+> virtualenv envtest
+
+-> activer l'environnement
+----------------------------------------------
+> set-executionpolicy unrestricted ou mieux (Set-ExecutionPolicy AllSigned)
+> dans {env}\Scripts\activate.ps1
+
+(envtest) > 

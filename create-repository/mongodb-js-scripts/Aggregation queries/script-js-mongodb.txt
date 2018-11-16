@@ -1,0 +1,9 @@
+executer un script javascript:
+
+- depuis le shell mongo
+
+> load("script.js")
+
+- depuis la ligne de commande
+
+mongo localhost:27017/{db} script.js (ou données de connexion dans le script)

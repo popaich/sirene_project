@@ -7,10 +7,10 @@ db = conn.getDB("sirene_app");
 
 var data = db.etablissement.aggregate([
   { 
-    $match: { codeCommuneEtablissement: '42015' }
+    $match: { $and: [{codeCommuneEtablissement: '42015' }, {etatAdministratifEtablissement: 'A' }] }
   },
   {
-    $count: "nbEtablissement-belmont"
+    $count: "count"
   }
 ]);
 
