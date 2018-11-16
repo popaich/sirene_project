@@ -1,6 +1,7 @@
 # Reqêtes de regroupement sur collection atablissement
 
 Compter le nombre de documents avec filtre match:
+
 conn = new Mongo();
 db = conn.getDB("sirene_app");
 
