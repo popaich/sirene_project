@@ -38,13 +38,10 @@ def get_etablissements(authorization_header):
     }
 
     data = requests.get('https://api.insee.fr/entreprises/sirene/siret', headers=headers, params=params).content
-    df = pandas.read_csv(io.StringIO(data.decode('utf-8')))
-    pretty_data = json.dumps(df.to_json(), indent=2)
-    print(pretty_data)
+    df = pandas.read_csv(io.StringIO(data.decode('utf-8')),dtype=str)
 
-"""     print(df.loc[[0],['siren']])
-    print(df.loc[[0],['activitePrincipaleUniteLegale']]) """
-
+    """ print(df.loc[[0],['siren']]) """
+    print('%s' % df.loc[[0],['nic']])
 
 if args:    
     get_etablissements(args[0])
