@@ -3,6 +3,9 @@ import json
 import sys
 import pandas
 import io
+from pprint import pprint
+from pymongo import MongoClient
+import inspect
 
 args = sys.argv[1:]
 
@@ -38,10 +41,89 @@ def get_etablissements(authorization_header):
     }
 
     data = requests.get('https://api.insee.fr/entreprises/sirene/siret', headers=headers, params=params).content
-    df = pandas.read_csv(io.StringIO(data.decode('utf-8')),dtype=str)
+    dataframe = pandas.read_csv(io.StringIO(data.decode('utf-8')),dtype=str)
 
-    """ print(df.loc[[0],['siren']]) """
-    print('%s' % df.loc[[0],['nic']])
+    df_etablissement = dataframe.filter(items=[
+        'siren',
+        'nic',
+        'siret',
+        'statutDiffusionEtablissement',
+        'dateCreationEtablissement',
+        'trancheEffectifsEtablissement',
+        'anneeEffectifsEtablissement',
+        'activitePrincipaleRegistreMetiersEtablissement',
+        'dateDernierTraitementEtablissement',
+        'etablissementSiege',
+        'nombrePeriodesEtablissement',
+        'complementAdresseEtablissement',
+        'numeroVoieEtablissement',
+        'indiceRepetitionEtablissement',
+        'typeVoieEtablissement',
+        'libelleVoieEtablissement',
+        'codePostalEtablissement',
+        'libelleCommuneEtablissement',
+        'libelleCommuneEtrangerEtablissement',
+        'distributionSpecialeEtablissement',
+        'codeCommuneEtablissement',
+        'codeCedexEtablissement',
+        'libelleCedexEtablissement',
+        'codePaysEtrangerEtablissement',
+        'libellePaysEtrangerEtablissement',
+        'complementAdresse2Etablissement',
+        'numeroVoie2Etablissement',
+        'indiceRepetition2Etablissement',
+        'typeVoie2Etablissement',
+        'libelleVoie2Etablissement',
+        'codePostal2Etablissement',
+        'libelleCommune2Etablissement',
+        'libelleCommuneEtranger2Etablissement',
+        'distributionSpeciale2Etablissement',
+        'codeCommune2Etablissement',
+        'codeCedex2Etablissement',
+        'libelleCedex2Etablissement',
+        'codePaysEtranger2Etablissement',
+        'libellePaysEtranger2Etablissement',
+        'dateDebut',
+        'etatAdministratifEtablissement',
+        'enseigne1Etablissement',
+        'enseigne2Etablissement',
+        'enseigne3Etablissement',
+        'denominationUsuelleEtablissement',
+        'activitePrincipaleEtablissement',
+        'nomenclatureActivitePrincipaleEtablissement',
+        'caractereEmployeurEtablissement'
+    ])
+
+    df_etablissement_json = json.dumps([row.dropna().to_dict() for index,row in df_etablissement.iterrows()])
+    df_etablissement_to_list = json.loads(df_etablissement_json)
+
+
+    for etablissement in df_etablissement_to_list:
+        print()
+        print(etablissement)
+        print()
+
+    #dataframe_to_json = dataframe.to_json(orient='records')
+    #dataframe_to_json = json.dumps([row.dropna().to_dict() for index,row in dataframe.iterrows()])
+    
+
+
+
+
+"""     client = MongoClient("mongodb://localhost:27017")
+    db = client.sirene_app
+    collectiontest = db.collectiontest
+
+    for etablissement in dataframe_to_list:
+
+        collectiontest.update_one(
+
+            { "siret": etablissement['siret'] },
+            { "$set": etablissement },
+            upsert= True
+        ) """
+
+        
 
 if args:    
     get_etablissements(args[0])
