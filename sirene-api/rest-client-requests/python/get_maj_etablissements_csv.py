@@ -6,6 +6,7 @@ import io
 from pprint import pprint
 from pymongo import MongoClient
 import inspect
+from urllib import parse
 
 args = sys.argv[1:]
 
@@ -43,7 +44,13 @@ def get_etablissements(authorization_header, dateDernierTraitementMaximum):
 
     print()
     print('nb total resultats: %s' % r.headers['X-Total-Count'])
-    print(r.links['next']['url'])
+    #print(r.links['next']['url'])
+
+    url = r.links['next']['url']
+    query = parse.parse_qs(parse.urlsplit(url).query)
+    #print(query)
+    print(query['q'][0])
+    print(query['masquerValeursNulles'][0])
     print()
     
     dataframe = pandas.read_csv(io.StringIO(data.decode('utf-8')),dtype=str)
@@ -118,7 +125,7 @@ if args:
     print()
 
     get_etablissements(args[0], dateDernierTraitementMaximum)
-    get_uniteslegales(args[0], dateDernierTraitementMaximum)
+    #get_uniteslegales(args[0], dateDernierTraitementMaximum)
 
 else:
     print('No authorization code !')
