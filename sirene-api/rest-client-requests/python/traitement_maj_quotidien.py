@@ -52,8 +52,7 @@ args = sys.argv[1:]
 if args:
 
     token = args[0]
-    #date = get_informations(token)
-    date = '[2018-11-01 TO *]'
+    date = get_informations(token)
     debut = 0
     nombre = 5000
     totalCount = 0
