@@ -9,6 +9,7 @@ import inspect
 from urllib import parse
 import insee_variables as insee
 import time
+import os
 
 def get_informations(authorization_header):
 
@@ -52,24 +53,29 @@ args = sys.argv[1:]
 if args:
 
     token = args[0]
-    date = get_informations(token)
+    dateDernierTraitementEtablissement_start = '2018-11-01'
+    dateDernierTraitementEtablissement_end = '2018-11-15'
+    #dateDernierTraitementEtablissement_end = get_informations(token)
     debut = 0
-    nombre = 5000
+    nombre = 10000
     totalCount = 0
+    csv_content = ''
+    countRequests = 1
+
+    file_name = 'maj_csv/maj_quotidienne.csv'
+
+    if os.path.exists(file_name):
+        os.remove(file_name) 
 
     print()
-    print('dateDernierTraitementMaximum: %s' % date)
-    print()
-
-    print()
-    print('traitement des mises à jour des établissements ...')
+    print('Obtention des maj d''établissement du {0} au {1} ...'.format(dateDernierTraitementEtablissement_start,dateDernierTraitementEtablissement_end))
     print()
 
     headers = {'Authorization':'Bearer %s' % token,'Accept':'text/csv'}
 
     params = {
-        'q': 'dateDernierTraitementEtablissement:' + date, 
-        'date': date,
+        'q': 'dateDernierTraitementEtablissement:[' + dateDernierTraitementEtablissement_start + ' TO ' + dateDernierTraitementEtablissement_end + ']', 
+        'date': dateDernierTraitementEtablissement_end,
         'masquerValeursNulles':'true',
         'champs':insee.ETABLISSEMENT,
         'nombre': nombre,
@@ -77,24 +83,30 @@ if args:
     }
 
     response = requests.get(insee.API_URL_ETAB, headers=headers, params=params)
+
     totalCount = response.headers['X-Total-Count']
-    print('reception des enregistrements {0} à {1} sur {2} terminée !'.format(debut, int(debut) + int(nombre) - 1, totalCount))
 
-    update_mongodb_etablissement(response.content)
-    print('mise à jour des enregistrements terminée !')
+    if int(totalCount) <= int(nombre):
+        print('reception des enregistrements {0} à {1} sur {2} terminée !'.format(debut, int(totalCount) - 1, totalCount))
+    else:
+        print('reception des enregistrements {0} à {1} sur {2} terminée !'.format(debut, int(debut) + int(nombre) - 1, totalCount))
+   
+    df = pandas.read_csv(io.StringIO(response.content.decode('utf-8')), header=0, dtype=str)
+    df.to_csv(file_name,mode='a', header=False, index=False)
 
-    while response.url != response.links['last']['url']:
+    while 'next' in response.links:
 
-        next_url = response.links['next']['url']
-        query = parse.parse_qs(parse.urlsplit(next_url).query)
+        url = response.links['next']['url']
+        countRequests = int(countRequests) + 1
+
+        query = parse.parse_qs(parse.urlsplit(url).query)
         debut = query['debut'][0]
         nombre = query['nombre'][0]
-        response = requests.get(response.links['next']['url'], headers=headers) 
+        response = requests.get(url, headers=headers)
         print('reception des enregistrements {0} à {1} sur {2} terminée !'.format(debut, int(debut) + int(nombre) - 1, totalCount))
 
-        update_mongodb_etablissement(response.content)
-        print('mise à jour des enregistrements terminée !')
-
+        df = pandas.read_csv(io.StringIO(response.content.decode('utf-8')), header=0, dtype=str)
+        df.to_csv(file_name,mode='a', header=False, index=False) 
 
     end = time.time()
     elapsed = end - begin

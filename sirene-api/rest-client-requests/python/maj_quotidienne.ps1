@@ -1,0 +1,1 @@
+mongoimport --db sirene_app --collection etablissement --type csv --file .\maj_csv\maj_quotidienne.csv --ignoreBlanks -v --columnsHaveTypes --fieldFile .\import_maj.txt --upsertFields siret --numInsertionWorkers 4 
